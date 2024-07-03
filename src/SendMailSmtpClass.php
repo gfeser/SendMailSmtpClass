@@ -170,18 +170,23 @@ class SendMailSmtpClass {
 	
 		
 	// добавление файла в письмо
-	public function addFile($path){
+	public function addFile($path,$myfilename=''){
 		$file = @fopen($path, "rb");
 		if(!$file) {
 			throw new Exception("File `{$path}` didn't open");
 		}		
 		$data = fread($file,  filesize( $path ) );
 		fclose($file);
-		$filename = basename($path);		
+		
+		if($myfilename=='')
+		    $filename = basename($path);
+		else
+		    $filename = $myfilename;
+				
 		$multipart  =  "\r\n--{$this->boundary}\r\n";   
-		$multipart .= "Content-Type: application/octet-stream; name=\"$filename\"\r\n";   
+		$multipart .= "Content-Type: application/octet-stream; name==?utf-8?B?".base64_encode($filename)."?=\n";   
 		$multipart .= "Content-Transfer-Encoding: base64\r\n";   
-		$multipart .= "Content-Disposition: attachment; filename=\"$filename\"\r\n";   
+		$multipart .= "Content-Disposition: attachment; name==?utf-8?B?".base64_encode($filename)."?=\n";   
 		$multipart .= "\r\n";
 		$multipart .= chunk_split(base64_encode($data));  
         
