@@ -19,6 +19,8 @@
 * 
 * @author Ipatov Evgeniy <admin@vk-book.ru>
 * @version 1.2
+*
+* @editor Sergey Fedorenko <f@has.ru>
 */
 
 namespace SmtpMail;
@@ -98,19 +100,13 @@ class SendMailSmtpClass {
 				}				
 			}
 			
-            fputs($socket, "AUTH LOGIN\r\n");
+            fputs($socket, "AUTH PLAIN\r\n");
             if (!$this->_parseServer($socket, "334")) {
                 fclose($socket);
                 throw new Exception('Autorization error');
             }
 			
-            fputs($socket, base64_encode($this->smtp_username) . "\r\n");
-            if (!$this->_parseServer($socket, "334")) {
-                fclose($socket);
-                throw new Exception('Autorization error');
-            }
-            
-            fputs($socket, base64_encode($this->smtp_password) . "\r\n");
+            fputs($socket, base64_encode("\0".$this->smtp_username."\0".$this->smtp_password) . "\r\n");
             if (!$this->_parseServer($socket, "235")) {
                 fclose($socket);
                 throw new Exception('Autorization error');
